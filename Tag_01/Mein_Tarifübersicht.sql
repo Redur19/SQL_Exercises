@@ -1,57 +1,11 @@
---Darenbank erstellen
-CREATE DATABASE testdb;
+USE master;
 
--- Datenbank auswählen
-USE testdb;
+IF DB_ID('TarifUebersicht') IS NOT NULL
+	ALTER DATABASE TarifUebersicht
+	SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 
--- Tabelle erstellen
-CREATE TABLE testTable(
-	id INT,
-	vorname VARCHAR (50),
-	nachname VARCHAR(50),
-	geburt DATE
-);
-
--- PRIMARY KEY ist automatische immer not Null.
--- IDENTITY gibt automatisch noch nicht gegebende ID.
--- IDENTITY Automatische Nummerierung: Start bei 10000, danach immer +10
--- NOT NULL Darf nicht leer sein
-CREATE TABLE testTable2 (
-	id INT IDENTITY(10000,10) PRIMARY KEY,
-	vorname VARCHAR(50) NOT NULL,
-	nachname VARCHAR(50) NOT NULL,
-	geburt DATE NULL
-);
-
---Zwei Tabellen mit Beziehungen
--- CONSTRAINT beninnt den Schlüssel.
-CREATE TABLE author(
-	id INT IDENTITY CONSTRAINT pk_author PRIMARY KEY,
-	firstname VARCHAR(50) NOT NULL,
-	lastname VARCHAR(50) NOT NULL,
-);
-
-CREATE TABLE book(
-	isbn CHAR (13) CONSTRAINT pk_book PRIMARY KEY,
-	title VARCHAR(100) NOT NULL,
-	price MONEY NULL,
-);
-
-CREATE TABLE authorbook(
-	author_id INT,
-	isbn CHAR (13), 
-	CONSTRAINT pk_authorbook 
-		PRIMARY KEY (author_id, isbn),
-	CONSTRAINT fk_authorbook_author 
-		FOREIGN KEY (author_id)
-		REFERENCES author (id),
-	CONSTRAINT fk_authorbook_book 
-		FOREIGN KEY (isbn)
-		REFERENCES book (isbn)
-);
-
-DROP TABLE testTable2;
-
+DROP DATABASE IF EXISTS TarifUebersicht;
+GO
 
 CREATE DATABASE TarifUebersicht;
 
