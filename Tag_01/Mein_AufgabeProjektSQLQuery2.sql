@@ -1,5 +1,6 @@
 CREATE DATABASE Aufgabe_Projekte;
 GO
+Go
 
 USE Aufgabe_Projekte;
 
