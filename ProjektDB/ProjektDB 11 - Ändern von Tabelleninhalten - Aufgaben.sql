@@ -26,8 +26,14 @@ GO
 INSERT INTO MuenchAbt
 SELECT id, bezeichnung FROM Abteilung
 WHERE ort = 'München';
-
 COMMIT TRANSACTION;
+--oder einfacher
+BEGIN TRANSACTION;
+SELECT id, bezeichnung 
+INTO MuenchAbt
+FROM Abteilung
+WHERE ort = 'München';
+
 SELECT* FROM MuenchAbt;
 
 
@@ -53,9 +59,21 @@ SELECT m.nachname, m.vorname, ab.bezeichnung
 FROM Mitarbeiter m 
 	INNER JOIN Abteilung ab On ab.id = m.abt_id
 	INNER JOIN Arbeit a ON a.mit_id = m.id AND a.pro_id = 2
-WHERE a.aufgabe IS NOT NULL ;
+WHERE a.aufgabe ='Sachbearbeiter';
+
 COMMIT TRANSACTION;
 ROLLBACK TRANSACTION;
+--oder
+BEGIN TRANSACTION;
+SELECT m.nachname, m.vorname,
+		(SELECT bezeichnung FROM Abteilung ab
+		WHERE ab.id = m.abt_id) AS bezeichnung
+INTO SacharbP2
+FROM Arbeit a
+INNER JOIN Mitarbeiter m on m.id=a.mit_id
+INNER JOIN Abteilung ab ON ab.id = m.abt_id
+WHERE a.pro_id = 2 AND a.aufgabe ='Sachbearbeiter';
+
 SELECT * FROM SacharbP2;
 SELECT * FROM Arbeit;
 -- ======
@@ -140,7 +158,9 @@ SELECT * FROM Projekt;
 -- Entfernen Sie alle Gruppenleiter aus den bestehenden 
 -- Projekten.
 BEGIN TRANSACTION;
-
+DELETE FROM Arbeit 
+WHERE aufgabe ='Gruppenleiter';
+SELECT * FROM Arbeit;
 
 -- Aufgabe 11.8
 --
@@ -154,9 +174,9 @@ WHERE nachname ='Mozer';--Fehlermeldung wegen Fremsschlüssel
 BEGIN TRANSACTION;
 UPDATE Mitarbeiter
 SET  vorname = 'XXX' ,nachname = 'XXX' , abt_id = NULL , ort = NULL , chef_id = NULL
-WHERE nachname ='Mozer';
+WHERE nachname ='Mozer';--Diese Lösung ist Falsch
 
-SELECT * FROM Mitarbeiter;
+
 -- Aufgabe 11.9
 --
 -- Löschen Sie alle Reihen der Tabelle Arbeit.
