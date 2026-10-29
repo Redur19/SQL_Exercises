@@ -1,6 +1,16 @@
+-- master Datenbank auswählen
 CREATE DATABASE Aufgabe_Projekte;
 GO
-Go
+
+-- Prüfen, ob Datenbank bereits vorhanden
+IF DB_ID('Projekte') IS NOT NULL
+	-- wenn ja, dann alle anderen Verbindungen kappen
+	ALTER DATABASE Projekte
+	SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+
+-- Datenbank löschen wenn da
+DROP DATABASE IF EXISTS Projekte;
+GO
 
 USE Aufgabe_Projekte;
 
