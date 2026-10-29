@@ -85,9 +85,13 @@ WHERE abt_id IN (SELECT id FROM Abteilung
 --      mit_id
 --      2581
 SELECT mit_id FROM Arbeit
-WHERE einst_dat IN (SELECT TOP (1) einst_dat FROM Arbeit
+WHERE aufgabe = 'Projektleiter' AND einst_dat IN (SELECT TOP (1) einst_dat FROM Arbeit
 					WHERE aufgabe = 'Projektleiter' 
 					ORDER BY einst_dat DESC);
+--bessere Variante
+SELECT mit_id FROM Arbeit
+WHERE aufgabe = 'Projektleiter' AND einst_dat = (SELECT MAX(einst_dat) FROM Arbeit
+												WHERE aufgabe = 'Projektleiter');
 
 -- Aufgabe 5.7
 -- Nennen Sie die Namen aller Mitarbeiter, die im Projekt "Apollo" 
