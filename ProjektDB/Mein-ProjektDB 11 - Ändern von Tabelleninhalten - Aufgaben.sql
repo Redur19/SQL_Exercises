@@ -163,7 +163,6 @@ WHERE aufgabe ='Gruppenleiter';
 SELECT * FROM Arbeit;
 
 -- Aufgabe 11.8
---
 -- Die Mitarbeiterin namens Mozer scheidet aus der Firma 
 -- aus. Versuchen Sie den Datensatz von Frau Mozer aus der 
 -- Tabelle Mitarbeiter zu entfernen. Was müssen Sie tun?
@@ -176,9 +175,31 @@ UPDATE Mitarbeiter
 SET  vorname = 'XXX' ,nachname = 'XXX' , abt_id = NULL , ort = NULL , chef_id = NULL
 WHERE nachname ='Mozer';--Diese Lösung ist Falsch
 
+DELETE FROM Arbeit
+WHERE mit_id = (
+		SELECT id
+		FROM Mitarbeiter
+		WHERE nachname = 'Mozer'
+);
+
+DELETE g
+FROM Gehalt g
+INNER JOIN Mitarbeiter m
+ON m.id = g.mit_id
+WHERE m.nachname = 'Mozer';
+
+--Optional wenn Mozer Umsatz erzielt hat auch die mit_id in Tabelle Umsatz löschen
+DELETE FROM Umsatz
+WHERE mit_id = (
+	SELECT id
+	FROM Mitarbeiter
+	WHERE nachname = 'Mozer'
+);
+
+DELETE FROM Mitarbeiter
+WHERE nachname = 'Mozer';
 
 -- Aufgabe 11.9
---
 -- Löschen Sie alle Reihen der Tabelle Arbeit.
 BEGIN TRANSACTION;
 TRUNCATE TABLE Arbeit;
