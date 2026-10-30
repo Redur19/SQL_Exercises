@@ -2,6 +2,7 @@
 -- um die folgenden Aufgaben zu lösen:
 USE ProjektDB;
 
+
 -- Aufgabe 8.1
 -- Zeigen Sie die Id, Firma und die Stadt aller Kunden
 -- an. Zeigen Sie dazu außerdem den Namen der Abteilungen 
@@ -50,11 +51,13 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      4   Getränke Schneider       Heidenheim   - k. A. -
 --      5   Finanzamt Ulm            Fürth        - k. A. -
 --      6   100% Sonderzeichen AG    Baden_Baden  - k. A. -
-
+SELECT k.*, ISNULL(ab.bezeichnung, '- k. A. -') FROM Kunde k 
+LEFT JOIN Abteilung ab ON ab.ort = k.ort;
+--oder mit COALESCE(ab.bezeichnung, '- k. A. -')
+--oder mit IIF(ab.bezeichnung IS NULL, '- k. A. -',ab.bezeichnung) 
 
 
 -- Aufgabe 8.4
---
 -- Geben Sie eine Liste aller Kunden aus. Geben Sie zu den
 -- Kunden auch das Projekt aus, sofern vorhanden.
 --
@@ -65,21 +68,23 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      Getränke Schneider       Heidenheim   Pluto
 --      Finanzamt Ulm            Fürth        Gemini
 --      100% Sonderzeichen AG    Baden_Baden  NULL
-
-
+SELECT k.firma, k.ort AS stadt, p.bezeichnung
+FROM Kunde k 
+	LEFT JOIN Projekt p ON p.kunde_id=k.id;
 
 -- Aufgabe 8.5
---
 -- Geben Sie jetzt nur die Kunden aus, zu denen es kein
 -- Projekt gibt.
 --
 --      firma                  stadt        bezeichnung
 --      100% Sonderzeichen AG  Baden_Baden  NULL
-
+SELECT k.firma, k.ort AS stadt, p.bezeichnung
+FROM Kunde k 
+	LEFT JOIN Projekt p ON p.kunde_id=k.id
+WHERE p.bezeichnung IS NULL;
 
 
 -- Aufgabe 8.6
---
 -- Geben Sie eine Liste der Kunden mit Firma und Stadt aus.
 -- Geben Sie dazu die Nachnamen der Mitarbeiter aus, die
 -- im selben Ort wohnen.
@@ -94,11 +99,12 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 
 --      ...
 --      (10 Zeilen)
-
+SELECT k.firma, k.ort AS stadt, m.nachname
+FROM Kunde k 
+	JOIN Mitarbeiter m ON m.ort =k.ort;
 
 
 -- Aufgabe 8.7
---
 -- Geben Sie wieder die Liste der Kunden aus. Geben Sie
 -- diesmal dazu die Anzahl Mitarbeiter aus, die am selben
 -- Ort wohnen.
@@ -110,11 +116,13 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      Im- und Export AG        München      4
 --      Frankreich-Reisen GmbH   Saarlouis    0
 --      Technische Produkte oHG  Ulm          2
-
+SELECT k.firma, k.ort AS stadt, COUNT(m.id) AS mitarbeiter
+FROM Kunde k 
+	LEFT JOIN Mitarbeiter m ON m.ort =k.ort
+GROUP BY k.firma, k.ort;
 
 
 -- Aufgabe 8.8
---
 -- Ergänzen Sie die Abfrage aus Aufgabe 8.7 und geben 
 -- Sie zusätzlich noch die Anzahl Abteilungen aus, die
 -- es am Ort des Kunden gibt.
@@ -126,11 +134,15 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      Im- und Export AG        München      4            3
 --      Frankreich-Reisen GmbH   Saarlouis    0            0
 --      Technische Produkte oHG  Ulm          2            1
-
+SELECT  k.firma,  k.ort AS stadt, COUNT(DISTINCT m.id) AS mitarbeiter ,
+		COUNT(DISTINCT ab.id) AS abteilungen 
+FROM Kunde k 
+	LEFT JOIN Mitarbeiter m ON m.ort =k.ort 
+	LEFT JOIN Abteilung ab ON ab.ort = k.ort 
+GROUP BY k.firma, k.ort;
 
 
 -- Aufgabe 8.9
---
 -- Zeigen Sie alle Mitarbeiter mit Id und nachname an
 -- und geben Sie dazu die vom Mitarbeiter getätigten
 -- Umsätze aus. Hat der Mitarbeiter noch keine Umsätze
@@ -145,11 +157,12 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      10102  Huber     500,00
 --      ...
 --      (36 Zeilen)
-
+SELECT m.id, m.nachname, COALESCE(u.umsatz,0) AS umsatz
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id;
 
 
 -- Aufgabe 8.10
---
 -- Überarbeiten Sie die Abfrage aus Aufgabe 8.9.
 -- Zeigen Sie diesmal nur die Mitarbeiter an, die
 -- noch keine Umsätze getätigt haben.
@@ -163,11 +176,13 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      20204  Fuchs     0,00
 --      ...
 --      (11 Zeilen)
-
+SELECT m.id, m.nachname, COALESCE(u.umsatz,0) umsatz
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+WHERE u.umsatz IS NULL;
 
 
 -- Aufgabe 8.11
---
 -- Überarbeiten Sie die Abfrage aus Aufgabe 8.9.
 -- Gruppieren Sie über die Mitarbeiter und geben 
 -- Sie statt der einzelnen Umsätze die Summe der
@@ -183,11 +198,12 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      12121  Richter   0,00
 --      ...
 --      (15 Zeilen)
-
-
+SELECT m.id, m.nachname, COALESCE(SUM(u.umsatz),0) umsatz
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+GROUP BY m.id, m.nachname;
 
 -- Aufgabe 8.12
---
 -- Überarbeiten Sie die Abfrage aus Aufgabe 8.11.
 -- Zeigen Sie nur die Mitarbeiter an, die weniger
 -- als 100000 Umsatz erreicht haben.
@@ -201,11 +217,19 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      17000  Krüger    20000,00
 --      ...
 --      (13 Zeilen)
-
+SELECT m.id, m.nachname, IIF(SUM(u.umsatz) < 100000 ,SUM(u.umsatz),0) AS umsatz
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+GROUP BY m.id, m.nachname;
+--oder
+SELECT m.id, m.nachname, ISNULL(SUM(u.umsatz),0) AS umsatz
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+GROUP BY m.id, m.nachname
+HAVING SUM(COALESCE(u.umsatz,0)) < 100000;
 
 
 -- Aufgabe 8.13
---
 -- Zeigen Sie alle Mitarbeiter der Abteilung 'a2' mit 
 -- Id und Nachname an und geben Sie dazu die vom Mitarbeiter 
 -- getätigten Umsätze aus. Hat der Mitarbeiter noch keine 
@@ -216,11 +240,14 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      2581   Kaufmann  100000
 --      9031   Meier     0
 --      29346  Probst    0
-
+SELECT m.id, m.nachname, COALESCE(SUM(u.umsatz),0)
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+WHERE m.abt_id=2
+GROUP BY m.id, m.nachname;
 
 
 -- Aufgabe 8.14
---
 -- Zeigen Sie alle Mitarbeiter mit Id und Nachname an
 -- und geben Sie dazu aus, an welchem Tag der Mitarbeiter
 -- zum ersten Mal einen Umsatz erzielt hat und wann er
@@ -235,11 +262,13 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      12121  Richter   NULL        NULL
 --      ...
 --      (15 Zeilen)
-
+SELECT m.id, m.nachname, MIN(u.datum), MAX(u.datum)
+FROM Mitarbeiter m
+	LEFT JOIN Umsatz u ON u.mit_id=m.id
+GROUP BY m.id, m.nachname;
 
 
 -- Aufgabe 8.15
---
 -- Listen Sie alle Mitarbeiter mit m_nr und m_name
 -- auf. Zusätzlich soll das Projekt genannt werden,
 -- in dem der Mitarbeiter Projektleiter ist. Sollte 
@@ -255,3 +284,7 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      12121  Richter   - k. A. -
 --      ...
 --      (15 Zeilen)
+SELECT m.id, m.nachname, ISNULL(p.bezeichnung,'- k. A. -') projekt
+FROM Mitarbeiter m
+	LEFT JOIN Arbeit a ON a.mit_id=m.id AND a.aufgabe ='Projektleiter'
+	LEFT JOIN Projekt p ON a.pro_id=p.id;
