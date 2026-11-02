@@ -22,10 +22,10 @@ where id in (select MIN(id) From Mitarbeiter);
 -- Unterabfrage.
 --
 --      abt_id
---      a2
---      a2
---      a3
---      a5
+--      2
+--      2
+--      3
+--      5
 
 select abt_id From Mitarbeiter 
 where id in (select mit_id From Arbeit
@@ -54,10 +54,10 @@ WHERE gehalt >(select AVG(gehalt) FROM Gehalt);
 -- Unterabfrage.
 --
 --      pro_id
---      p1
---      p3
---      p4
---      p5
+--      1
+--      3
+--      4
+--      5
 select DISTINCT pro_id FROM Arbeit
 WHERE mit_id < (select id FROM Mitarbeiter
 							where nachname='Müller');
@@ -115,10 +115,10 @@ WHERE id IN (SELECT mit_id FROM Arbeit
 -- Nutzen Sie drei verschachtelte Unterabfragen.
 --
 --      id  bezeichnung
---      a1  Beratung
---      a2  Diagnose
---      a3  Freigabe
---      a5  Verkauf
+--      1  Beratung
+--      2  Diagnose
+--      3  Freigabe
+--      5  Verkauf
 SELECT id,bezeichnung FROM Abteilung
 WHERE id IN(SELECT abt_id FROM Mitarbeiter
 			WHERE id IN(SELECT mit_id FROM Arbeit
@@ -136,12 +136,12 @@ SELECT * FROM Arbeit
 -- korrelierte Unterabnfrage im SELECT. 20 Datensätze
 --
 --      pro_id  aufgabe         nachname
---      p1      NULL            Krüger
---      p1      NULL            Mozer
---      p1      Gruppenleiter   Meier
---      p1      Projektleiter   Huber
---      p1      Sachbearbeiter  Probst
---      p2      NULL            Probst
+--      1       NULL            Krüger
+--      1       NULL            Mozer
+--      1       Gruppenleiter   Meier
+--      1       Projektleiter   Huber
+--      1       Sachbearbeiter  Probst
+--      2       NULL            Probst
 SELECT pro_id, aufgabe ,(SELECT nachname FROM Mitarbeiter m
 						WHERE a.mit_id =m.id) AS nachname
 FROM Arbeit a
@@ -154,12 +154,12 @@ ORDER BY pro_id, aufgabe ASC;
 -- korrelierte Unterabfragen im SELECT.
 --
 --      pro_id  bezeichnung  aufgabe         nachname
---      p1      Apollo       NULL            Krüger
---      p1      Apollo       NULL            Mozer
---      p1      Apollo       Gruppenleiter   Meier
---      p1      Apollo       Projektleiter   Huber
---      p1      Apollo       Sachbearbeiter  Probst
---      p2      Gemini       NULL            Probst
+--       1      Apollo       NULL            Krüger
+--       1      Apollo       NULL            Mozer
+--       1      Apollo       Gruppenleiter   Meier
+--       1      Apollo       Projektleiter   Huber
+--       1      Apollo       Sachbearbeiter  Probst
+--       2      Gemini       NULL            Probst
 SELECT pro_id,(SELECT p.bezeichnung FROM Projekt p
 				WHERE p.id =a.pro_id) bezeichnung,aufgabe ,(SELECT nachname FROM Mitarbeiter m
 						WHERE a.mit_id =m.id) AS nachname
@@ -167,7 +167,6 @@ FROM Arbeit a
 ORDER BY pro_id, aufgabe ASC;
 
 -- Aufgabe 5.11
---
 -- Geben Sie eine Liste aller Abteilngsnamen aus. Geben 
 -- Sie dazu aus, wie viele Mitarbeiter in der Abteilung 
 -- arbeiten. Nutzen Sie eine korrelierte Unterabfrage 
@@ -185,7 +184,6 @@ FROM Abteilung ab;
 
 
 -- Aufgabe 5.12
---
 -- Geben Sie eine Liste aller Mitarbeiter-Ids mit Gehalt aus.
 -- Geben Sie dazu auch den Namen des Mitarbeiters aus. Nutzen
 -- Sie eine korrelierte Unterabfrage im SELECT.
@@ -203,7 +201,6 @@ SELECT g.mit_id, (SELECT m.nachname FROM Mitarbeiter m
 FROM Gehalt g;
 
 -- Aufgabe 5.13
---
 -- Erweitern Sie die Abfrage aus Aufgabe 5.12 und geben
 -- Sie zusätzlich noch das Durschnitts-Gehalt aller 
 -- Mitarbeiter aus. Zeigen Sie anschließend noch die
@@ -225,7 +222,6 @@ FROM Gehalt g;
 
 
 -- Aufgabe 5.14
---
 -- Zeigen Sie die Mitarbeiternamen und Abteilungsnamen der 
 -- Mitarbeiter an, die im Projekt "Apollo" arbeiten. Nutzen 
 -- Sie zwei verschachtelte Unterabfragen und eine korrelierte

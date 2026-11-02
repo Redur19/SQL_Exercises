@@ -9,7 +9,7 @@ USE ProjektDB;
 -- an, die am Ort des Kunden ihren Sitz haben (bilden Sie 
 -- den Join über die Stadt).
 --
---      id  firma                    stadt        bezeichnung
+--      id  firma                    ort		  bezeichnung
 --      1   Im- und Export AG        München      Beratung
 --      1   Im- und Export AG        München      Diagnose
 --      1   Im- und Export AG        München      Einkauf
@@ -27,7 +27,7 @@ LEFT JOIN Abteilung ab ON ab.ort = k.ort;
 -- Abteilungen angezeigt werden, und dazu die passenden
 -- Kunden im selben Ort.
 --
---      id    firma                    stadt    bezeichnung
+--      id    firma                    ort    bezeichnung
 --      1     Im- und Export AG        München  Beratung
 --      1     Im- und Export AG        München  Diagnose
 --      NULL  NULL                     NULL     Freigabe
@@ -42,7 +42,7 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 -- Statt NULL soll in der Spalte für die Abteilung der
 -- Text '- k. A. -' angezeigt werden.
 --
---      id  firma                    stadt        bezeichnung
+--      id  firma                    ort        bezeichnung
 --      1   Im- und Export AG        München      Beratung
 --      1   Im- und Export AG        München      Diagnose
 --      1   Im- und Export AG        München      Einkauf
@@ -51,7 +51,8 @@ RIGHT JOIN Abteilung ab ON ab.ort = k.ort;
 --      4   Getränke Schneider       Heidenheim   - k. A. -
 --      5   Finanzamt Ulm            Fürth        - k. A. -
 --      6   100% Sonderzeichen AG    Baden_Baden  - k. A. -
-SELECT k.*, ISNULL(ab.bezeichnung, '- k. A. -') FROM Kunde k 
+SELECT k.*, ISNULL(ab.bezeichnung, '- k. A. -') AS bezeichnung 
+FROM Kunde k 
 LEFT JOIN Abteilung ab ON ab.ort = k.ort;
 --oder mit COALESCE(ab.bezeichnung, '- k. A. -')
 --oder mit IIF(ab.bezeichnung IS NULL, '- k. A. -',ab.bezeichnung) 
@@ -61,14 +62,14 @@ LEFT JOIN Abteilung ab ON ab.ort = k.ort;
 -- Geben Sie eine Liste aller Kunden aus. Geben Sie zu den
 -- Kunden auch das Projekt aus, sofern vorhanden.
 --
---      firma                    stadt        bezeichnung
+--      firma                    ort        bezeichnung
 --      Im- und Export AG        München      Merkur
 --      Technische Produkte oHG  Ulm          Ariane
 --      Frankreich-Reisen GmbH   Saarlouis    Apollo
 --      Getränke Schneider       Heidenheim   Pluto
 --      Finanzamt Ulm            Fürth        Gemini
 --      100% Sonderzeichen AG    Baden_Baden  NULL
-SELECT k.firma, k.ort AS stadt, p.bezeichnung
+SELECT k.firma, k.ort , p.bezeichnung
 FROM Kunde k 
 	LEFT JOIN Projekt p ON p.kunde_id=k.id;
 
@@ -76,9 +77,9 @@ FROM Kunde k
 -- Geben Sie jetzt nur die Kunden aus, zu denen es kein
 -- Projekt gibt.
 --
---      firma                  stadt        bezeichnung
+--      firma                  ort        bezeichnung
 --      100% Sonderzeichen AG  Baden_Baden  NULL
-SELECT k.firma, k.ort AS stadt, p.bezeichnung
+SELECT k.firma, k.ort , p.bezeichnung
 FROM Kunde k 
 	LEFT JOIN Projekt p ON p.kunde_id=k.id
 WHERE p.bezeichnung IS NULL;
@@ -89,7 +90,7 @@ WHERE p.bezeichnung IS NULL;
 -- Geben Sie dazu die Nachnamen der Mitarbeiter aus, die
 -- im selben Ort wohnen.
 --
---      firma                   stadt       nachname
+--      firma                   ort       nachname
 --      Im- und Export AG       München     Richter
 --      Im- und Export AG       München     Vogel
 --      Im- und Export AG       München     Schubert
@@ -99,7 +100,7 @@ WHERE p.bezeichnung IS NULL;
 
 --      ...
 --      (10 Zeilen)
-SELECT k.firma, k.ort AS stadt, m.nachname
+SELECT k.firma, k.ort , m.nachname
 FROM Kunde k 
 	JOIN Mitarbeiter m ON m.ort =k.ort;
 
@@ -109,14 +110,14 @@ FROM Kunde k
 -- diesmal dazu die Anzahl Mitarbeiter aus, die am selben
 -- Ort wohnen.
 --
---      firma                    stadt        mitarbeiter
+--      firma                    ort        mitarbeiter
 --      100% Sonderzeichen AG    Baden_Baden  0
 --      Finanzamt Ulm            Fürth        1
 --      Getränke Schneider       Heidenheim   1
 --      Im- und Export AG        München      4
 --      Frankreich-Reisen GmbH   Saarlouis    0
 --      Technische Produkte oHG  Ulm          2
-SELECT k.firma, k.ort AS stadt, COUNT(m.id) AS mitarbeiter
+SELECT k.firma, k.ort , COUNT(m.id) AS mitarbeiter
 FROM Kunde k 
 	LEFT JOIN Mitarbeiter m ON m.ort =k.ort
 GROUP BY k.firma, k.ort;
@@ -127,14 +128,14 @@ GROUP BY k.firma, k.ort;
 -- Sie zusätzlich noch die Anzahl Abteilungen aus, die
 -- es am Ort des Kunden gibt.
 --
---      firma                    stadt        mitarbeiter  abteilungen
+--      firma                    ort        mitarbeiter  abteilungen
 --      100% Sonderzeichen AG    Baden_Baden  0            0
 --      Finanzamt Ulm            Fürth        1            0
 --      Getränke Schneider       Heidenheim   1            0
 --      Im- und Export AG        München      4            3
 --      Frankreich-Reisen GmbH   Saarlouis    0            0
 --      Technische Produkte oHG  Ulm          2            1
-SELECT  k.firma,  k.ort AS stadt, COUNT(DISTINCT m.id) AS mitarbeiter ,
+SELECT  k.firma,  k.ort, COUNT(DISTINCT m.id) AS mitarbeiter ,
 		COUNT(DISTINCT ab.id) AS abteilungen 
 FROM Kunde k 
 	LEFT JOIN Mitarbeiter m ON m.ort =k.ort 
@@ -262,7 +263,7 @@ GROUP BY m.id, m.nachname;
 --      12121  Richter   NULL        NULL
 --      ...
 --      (15 Zeilen)
-SELECT m.id, m.nachname, MIN(u.datum), MAX(u.datum)
+SELECT m.id, m.nachname, MIN(u.datum) erster, MAX(u.datum) letzter
 FROM Mitarbeiter m
 	LEFT JOIN Umsatz u ON u.mit_id=m.id
 GROUP BY m.id, m.nachname;

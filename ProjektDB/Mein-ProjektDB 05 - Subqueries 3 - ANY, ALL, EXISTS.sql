@@ -119,10 +119,10 @@ WHERE m1.id IS NULL;
 -- sind. Verwenden Sie eine korrelierte Unterabfrage 
 -- und den Operator EXISTS.
 --
---      stadt
+--      ort
 --      München
 --      Ulm
-SELECT DISTINCT m.ort AS stadt 
+SELECT DISTINCT m.ort  
 FROM Mitarbeiter m
 WHERE  EXISTS (SELECT ort FROM Abteilung ab
 				WHERE ab.ort=m.ort) ;
