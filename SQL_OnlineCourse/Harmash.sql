@@ -24,7 +24,7 @@ GO
 CREATE DATABASE harmash;
 GO
 USE harmash;
-Go
+
 
 CREATE TABLE employees (
     id         INT NOT NULL PRIMARY KEY IDENTITY,
@@ -54,9 +54,7 @@ FROM employees;
 SELECT first_name AS First_Name, last_name AS 'Last Name', salary AS 'Salary'
 FROM employees;
 
-
-
-
+--neue Tabelle
 CREATE TABLE employees2 (
     id         INT NOT NULL PRIMARY KEY IDENTITY,
     first_name VARCHAR(50),
@@ -76,15 +74,22 @@ INSERT INTO employees2 VALUES ( 'Jana', 'Alkassem', 780);
 INSERT INTO employees2 VALUES ( 'Houssam', 'Zahrani', 880);
 
 SELECT
-    CONCAT(first_name, ' ', last_name) AS Employee,
-    CONCAT(salary, ' $') AS 'Salary'
-FROM employees2;
+    --CONCAT(first_name, ' ', last_name) AS Employee,
+    (first_name+ ' '+ last_name) AS Employee,
+    CONCAT(salary, ' $') AS 'Salary.'
+FROM employees2
+WHERE salary >= 800
+ORDER BY salary ;--aufsteigend
+
+SELECT * FROM employees2
+WHERE first_name LIKE '[AM]%' --hier der Name muss mit A oder M anfangen
+ORDER BY first_name DESC; --absteigend
 
 
 
 CREATE TABLE products (
     id    INT NOT NULL PRIMARY KEY IDENTITY,
-    name  VARCHAR(50),
+    namen  VARCHAR(50),
     price DECIMAL(7,2)
 );
 GO
@@ -102,10 +107,10 @@ SELECT
     price + (price * 0.1) AS 'Final Price ($)'    -- Brutto Preis 
 FROM products
 
---rename the name from products.
-EXEC sp_rename 'products.name','nachname','COLUMN';
+--rename the 'name' from products.
+EXEC sp_rename 'products.namen','nachnamen','COLUMN';
 
---FROMAT , wie viele Ziffern sollen nach dem Komma angezeigt werden.
+--FROMAT, wie viele Ziffern sollen nach dem Komma angezeigt werden.
 SELECT nachname AS Produkt,
         price AS 'Price ($)',
         FORMAT(price * 0.9, '0.00') AS 'Price (€)',
@@ -113,4 +118,52 @@ SELECT nachname AS Produkt,
         FORMAT(price * 3.75, '0.0') AS 'Price (SAR)'
 FROM products;
 
-select * FROM products
+SELECT * FROM employees2
+WHERE salary>=800;
+
+
+CREATE TABLE Customers (
+    id         INT IDENTITY NOT NULL PRIMARY KEY ,
+    first_name VARCHAR(50),
+    last_name  VARCHAR(50),
+    country    VARCHAR(50)
+);
+INSERT INTO Customers VALUES ( 'Rami', 'Masri', 'Lebanon');
+INSERT INTO Customers VALUES ( 'Ahmad', 'Naji', 'Syria');
+INSERT INTO Customers VALUES ( 'Hanan', 'Mostafa', 'KSA');
+INSERT INTO Customers VALUES ( 'Saly', 'Harmush', 'Lebanon');
+INSERT INTO Customers VALUES ( 'Samir', 'Saleh', 'Lebanon');
+INSERT INTO Customers VALUES ( 'Hamad', 'Akel', 'Syria');
+INSERT INTO Customers VALUES ( 'Abdullah', 'Helmi', 'Egypt');
+INSERT INTO Customers VALUES ( 'Rashed', 'Masri', 'Oman');
+INSERT INTO Customers VALUES ( 'Majed', 'Alali', 'Yaman');
+INSERT INTO Customers VALUES ( 'Rayan', 'Kasabi', 'KSA');
+
+SELECT * FROM Customers;
+BEGIN TRANSACTION;
+DELETE FROM Customers WHERE id = 10;   
+INSERT INTO Customers VALUES ( 'Max', 'Müller', 'Germany');
+SELECT * FROM Customers;
+
+INSERT INTO Customers VALUES ( 'xxx', 'xxx', 'xxx');
+UPDATE Customers
+SET first_name = 'Sasha',
+    last_name = 'Dreibrüder',
+    country = 'Germany'
+WHERE id = 12;
+
+SELECT TOP(1) salary AS 'Lowest Salary'  --or MAX(salary)
+FROM employees2                 
+ORDER BY salary DESC;
+
+SELECT salary AS 'Second Highest Salary' 
+FROM employees2                                   
+ORDER BY salary DESC
+OFFSET 1 ROWS
+FETCH NEXT 1 ROWS ONLY;
+
+SELECT MIN(salary) AS 'Second Highest Salary' 
+FROM employees2                                   
+WHERE salary IN ( SELECT TOP(2) salary 
+                FROM employees2 
+                ORDER BY salary DESC);
