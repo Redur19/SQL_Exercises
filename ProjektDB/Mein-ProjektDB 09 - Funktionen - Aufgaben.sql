@@ -42,7 +42,8 @@ FROM Mitarbeiter;
 --      Ursula Richter, München
 --      ...
 --      (15 Zeilen)
-SELECT CONCAT(TRIM(vorname),' ',TRIM(nachname),', ',ISNULL(ort, 'unbekannt')) AS 'mitarbeiter'
+SELECT CONCAT(TRIM(vorname),' ',TRIM(nachname),', ',
+				ISNULL(ort, 'unbekannt')) AS 'mitarbeiter'
 FROM Mitarbeiter;
 
 
@@ -64,7 +65,9 @@ FROM Mitarbeiter;
 --      (15 Zeilen)
 SELECT CONCAT(LEFT(vorname,1),'. ',TRIM(nachname)) AS 'name'
 FROM Mitarbeiter;
-
+--Oder
+SELECT CONCAT(SUBSTRING(vorname,1,1),'. ',TRIM(nachname)) AS 'name'
+FROM Mitarbeiter
 
 -- Aufgabe 9.9
 -- Geben Sie die Nachnamen der Mitarbeiter aus und sortieren
@@ -101,7 +104,7 @@ ORDER BY LEN(nachname)ASC , nachname DESC;
 --      ...
 --      (15 Zeilen)
 SELECT nachname, PATINDEX('%[aeiouüäö]%',nachname) AS erster_vokal 
-FROM Mitarbeiter
+FROM Mitarbeiter;
 
 
 -- Aufgabe 9.11
@@ -122,8 +125,10 @@ SELECT DATEDIFF(DAY,'20261026',GETDATE()) AS tage_in_modul
 --      datum_formatiert
 --      Heute ist Dienstag, der 03. November des Jahres 2026 in der 35. Kalenderwoche
 SELECT CONCAT('Heute ist ',DATENAME(dw,GETDATE()),', der ', 
-				DATENAME(DAY,GETDATE()),'. ',DATENAME(month,GETDATE()),' des Jahres ',
-				YEAR(GETDATE()),' in der ', DATENAME(WEEK,GETDATE()),' Kalenderwoche'
+				DATENAME(DAY,GETDATE()),'. ',
+				DATENAME(month,GETDATE()),' des Jahres ',
+				YEAR(GETDATE()),' in der ',
+				DATENAME(WEEK,GETDATE()),' Kalenderwoche'
 				) AS datum_formatiert
 
 
@@ -132,7 +137,8 @@ SELECT CONCAT('Heute ist ',DATENAME(dw,GETDATE()),', der ',
 --
 --      datum       tag_des_jahres
 --      2026-11-03  307
-SELECT CAST(GETDATE() AS DATE) AS datum, DATEPART(DAYOFYEAR, GETDATE()) AS tag_des_jahres
+SELECT CAST(GETDATE() AS DATE) AS datum,
+		DATEPART(DAYOFYEAR, GETDATE()) AS tag_des_jahres
 
 
 -- Aufgabe 9.14
