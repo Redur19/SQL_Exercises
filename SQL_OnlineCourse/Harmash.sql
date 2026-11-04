@@ -118,6 +118,7 @@ SELECT nachname AS Produkt,
         FORMAT(price * 3.75, '0.0') AS 'Price (SAR)'
 FROM products;
 
+--SELECT mit Bedingung
 SELECT * FROM employees2
 WHERE salary>=800;
 
@@ -152,45 +153,13 @@ SET first_name = 'Sasha',
     country = 'Germany'
 WHERE id = 12;
 
-SELECT TOP(1) salary AS 'Lowest Salary'  --or MAX(salary)
-FROM employees2                 
-ORDER BY salary DESC;
-
-SELECT salary AS 'Second Highest Salary' 
-FROM employees2                                   
-ORDER BY salary DESC
-OFFSET 1 ROWS
-FETCH FIRST 1 ROWS ONLY;
-
-SELECT MIN(salary) AS 'Second Highest Salary' 
-FROM employees2                                   
-WHERE salary IN ( SELECT TOP(2) salary 
-                FROM employees2 
-                ORDER BY salary DESC);
-
-SELECT salary AS 'Salary' 
-FROM employees2                                   
-ORDER BY salary DESC
-OFFSET 0 ROWS
-FETCH FIRST 2 ROWS ONLY; --NEXT statt FIRST geht es auch.
-
-SELECT * FROM Customers
-ORDER BY id
-OFFSET 2 ROWS
-FETCH NEXT 4 ROWS ONLY;--FIRST statt NEXT geht es auch.
-
 SELECT * FROM employees;
-
-SELECT first_name, last_name, birthday --Älteste ung jungeste 
-FROM employees
-WHERE birthday IN ((SELECT MIN(birthday) FROM employees), (SELECT MAX(birthday) FROM employees))
-ORDER BY birthday
 
 BEGIN TRANSACTION;
 INSERT INTO employees
 VALUES('Red','Hm', 0 ,1001,'19951128');
 
-
+--DATE_Funktionen
 SELECT first_name, last_name, birthday , DATEDIFF(YEAR, birthday ,GETDATE()) AS alter_jahre ,
            IIF(DATEDIFF(YEAR, birthday ,GETDATE()) >= 18 ,'Ja','Nein') AS minderjaehrig
 FROM employees
@@ -205,5 +174,4 @@ SELECT first_name, last_name, birthday , DATEDIFF(YEAR, birthday ,GETDATE())
                 END AS alter_jahre ,
            IIF(DATEDIFF(YEAR, birthday ,GETDATE()) >= 30 ,'Ja','Nein') AS minderjaehrig
 FROM employees;
-
 
