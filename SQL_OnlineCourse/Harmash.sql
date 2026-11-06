@@ -109,11 +109,8 @@ SELECT namen AS produkt,                            -- Produktname
     price + (price * 0.1) AS 'Final Price ($)'    -- Brutto Preis 
 FROM products
 
---rename the 'namen' from products.
-EXEC sp_rename 'products.namen','nachnamen','COLUMN';
-
 --FROMAT, wie viele Ziffern sollen nach dem Komma angezeigt werden.
-SELECT nachnamen AS Produkt,
+SELECT namen AS Produkt,
         price AS 'Price ($)',
         FORMAT(price * 0.9, '0.00') AS 'Price (€)',
         FORMAT(price * 1500, '0') AS 'Price (LL)',
