@@ -3,6 +3,8 @@ DROP DATABASE IF EXISTS harmash;
 
 CREATE DATABASE harmash;
 
+USE Harmash;
+
 CREATE TABLE users (
     id INT NOT NULL PRIMARY KEY IDENTITY,
     username VARCHAR(50),
@@ -16,11 +18,12 @@ INSERT INTO users (username, email) VALUES ('rami', 'rami@example.com');
 INSERT INTO users (username, email) VALUES ('maria', 'maria@example.com');
 
 SELECT * FROM users;
-USE Harmash;
+
 --Neuer Test
 
+-- 1. Schritt DATABASE harmash löschen falls schon existiert
 DROP DATABASE IF EXISTS harmash;
-GO
+-- harmash DATABASE anlegen
 CREATE DATABASE harmash;
 GO
 USE harmash;
@@ -100,27 +103,23 @@ INSERT INTO products VALUES ( 'SSD 1TB', 274.66);
 INSERT INTO products VALUES ( 'Mouse', 8.50);
 INSERT INTO products VALUES ( 'Table', 44.55);
 
-SELECT 
-    name AS produkt,                            -- Produktname
+SELECT namen AS produkt,                            -- Produktname
     price AS 'Price ($)',                         -- Netto Preis
     price * 0.1 AS 'Tax ($)',                     -- 10% Steuer
     price + (price * 0.1) AS 'Final Price ($)'    -- Brutto Preis 
 FROM products
 
---rename the 'name' from products.
+--rename the 'namen' from products.
 EXEC sp_rename 'products.namen','nachnamen','COLUMN';
 
 --FROMAT, wie viele Ziffern sollen nach dem Komma angezeigt werden.
-SELECT nachname AS Produkt,
+SELECT nachnamen AS Produkt,
         price AS 'Price ($)',
         FORMAT(price * 0.9, '0.00') AS 'Price (€)',
         FORMAT(price * 1500, '0') AS 'Price (LL)',
         FORMAT(price * 3.75, '0.0') AS 'Price (SAR)'
 FROM products;
 
---SELECT mit Bedingung
-SELECT * FROM employees2
-WHERE salary>=800;
 
 
 CREATE TABLE Customers (
@@ -145,6 +144,7 @@ BEGIN TRANSACTION;
 DELETE FROM Customers WHERE id = 10;   
 INSERT INTO Customers VALUES ( 'Max', 'Müller', 'Germany');
 SELECT * FROM Customers;
+ROLLBACK TRANSACTION;
 
 INSERT INTO Customers VALUES ( 'xxx', 'xxx', 'xxx');
 UPDATE Customers
@@ -158,6 +158,9 @@ SELECT * FROM employees;
 BEGIN TRANSACTION;
 INSERT INTO employees
 VALUES('Red','Hm', 0 ,1001,'19951128');
+
+SELECT * FROM employees;
+
 
 --DATE_Funktionen
 SELECT first_name, last_name, birthday , DATEDIFF(YEAR, birthday ,GETDATE()) AS alter_jahre ,
