@@ -1,0 +1,9 @@
+
+# Visual Studio und SSMS temporäre Dateien
+.vs/
+**/.vs/
+
+# Temporäre Dateien
+*.user
+*.suo
+*.cache

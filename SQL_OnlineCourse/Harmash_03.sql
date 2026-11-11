@@ -58,24 +58,36 @@ DROP TABLE IF EXISTS users;
 GO
 CREATE TABLE users (
     id         INT NOT NULL PRIMARY KEY IDENTITY,
-    username   VARCHAR(50) ,
+    username   VARCHAR(50) UNIQUE,
     country  VARCHAR(100)
 );
-
-SELECT * FROM users;
-
---aber wenndie Tabelle bereits existiert dann :
+--oder in zwei Schtitte
+DROP TABLE IF EXISTS users;
+GO
+CREATE TABLE users (
+    id         INT NOT NULL PRIMARY KEY IDENTITY,
+    username   VARCHAR(50),
+    country  VARCHAR(100)
+);
+-- wenn die Tabelle bereits existiert dann :
 ALTER TABLE users 
 ADD CONSTRAINT un_name_users UNIQUE (username);
 
---beispeil dazu
-SELECT * FROM Worker;
-ALTER TABLE Worker 
-ADD CONSTRAINT uniq_Workername UNIQUE (username);
+SELECT * FROM users;
 
-INSERT INTO Worker 
-VALUES ('rami','male','Germany',900) 
+
+
+--beispeil dazu
+SELECT * FROM Customers;
+ALTER TABLE Customers 
+ADD CONSTRAINT uniq_Custname UNIQUE (first_name);
+
+EXEC sp_help Customers; --so können wir uniq_Custname sehen
+
+INSERT INTO Customers 
+VALUES ('Rami','Schmidt','Germany',900) 
 --Fehlermeldung ,der Name 'rami' existiert bereits einmal und darf gleiche Werte sich nicht wiederholen.
+
 
 
 --rename the 'namen' from products.
