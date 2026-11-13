@@ -92,5 +92,3 @@ VALUES ('Rami','Schmidt','Germany',900)
 
 --rename the 'namen' from products.
 EXEC sp_rename 'products.namen','nachnamen','COLUMN';--aber hab nich ausgeführt.
-
-TEST FOR Visual Studio CODE 
